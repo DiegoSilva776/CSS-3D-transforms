@@ -1,0 +1,95 @@
+/* Demonstration wrapper code */
+body {
+  background: #c0c0c0;
+  color: #333;
+}
+h1 {
+  font: small-caps 167% Arial, Helvetica, sans-serif
+}
+#container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* Important code for the cylindrical visualizer */
+.cylindrical-product-display-container,
+.cpdc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  perspective: 900px;
+  -moz-perspective: 900px;
+  -webkit-perspective: 900;
+  overflow: hidden;
+}
+.cpdc .product {
+  display: block;
+  position: absolute;
+}
+.cpdc .product .product-imagery {
+  display: block;
+  width: 500px;
+  height: 500px;
+}
+
+.cpdc .cylindrical-container {
+  display: block;
+  width: 500px;
+  height: 500px;
+  transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate3d(0px, 0px, 0px);
+  -moz-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate3d(0px, 0px, 0px);
+  -webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate3d(0px, 0px, 0px);
+}
+.cpdc .cylindrical-container .product-imagery {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.cpdc .cylindrical-container .warped-rectangle {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+  transform-style: preserve-3d;
+  top: 68px;
+  left: -2px;
+  height: 350px;
+  width: 100%;
+  -moz-transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform: rotateY(106deg) rotateX(0deg) rotateZ(0deg) scale(0.9);
+}
+.cpdc .cylindrical-container .warped-rectangle.anim-infinite-rotation {
+  animation: spin 25s infinite linear;
+  -moz-animation: spin 25s infinite linear;
+  -webkit-animation: spin 25s infinite linear;
+  transform: rotateX(0deg) rotateY(120deg) rotateZ(0deg);
+}
+.cpdc .cylindrical-container .warped-rectangle .section {
+  position: absolute;
+  background: url("https://design-raster.out.customink.com/designs/svv0-00ck-6rxn/front.png");
+  background-repeat:calc(100%);
+  border-width: thin 0;
+  height: 100%;
+  width: 34px;
+  opacity: 1;
+  border: 1px solid transparent;
+}
+
+@-moz-keyframes spin {
+  from { -moz-transform: rotateY(0) }
+  to { -moz-transform: rotateY(-360deg) }
+}
+@-webkit-keyframes spin {
+  from { -webkit-transform: rotateY(0) }
+  to { -webkit-transform: rotateY(-360deg) }
+}
