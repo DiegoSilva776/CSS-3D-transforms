@@ -49,7 +49,10 @@ h1 {
   -webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate3d(0px, 0px, 0px);
 }
 .cpdc .cylindrical-container .product-imagery {
+  /* for dynamic image mode */
   display: block;
+  /* for white label mode */
+  /* display: none; */
   position: absolute;
   width: 100%;
   height: 100%;
@@ -60,10 +63,16 @@ h1 {
   justify-content: center;
   position: relative;
   transform-style: preserve-3d;
+  /* for dynamic image mode */
   top: 68px;
   left: -2px;
   height: 350px;
   width: 100%;
+  /* for white label mode */
+  /* top: 150px;
+  left: -2px;
+  height: 200px;
+  width: 100%; */
   -moz-transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
   transform: rotateY(106deg) rotateX(0deg) rotateZ(0deg) scale(0.9);
@@ -76,12 +85,18 @@ h1 {
 }
 .cpdc .cylindrical-container .warped-rectangle .section {
   position: absolute;
+  /* for white label mode */
+  /* background: #ffffff94; */
+  /* for dynamic image mode */
   background: url("https://design-raster.out.customink.com/designs/svv0-00ck-6rxn/front.png");
-  background-repeat:calc(100%);
+  /* background: url("https://design-raster.out.customink.com/designs/svv0-00ck-72vm/front.png"); */
   border-width: thin 0;
   height: 100%;
   width: 34px;
   opacity: 1;
+  /* for white label mode */
+  /* border: 1px solid #575ae614; */
+  /* for dynamic image mode */
   border: 1px solid transparent;
 }
 
