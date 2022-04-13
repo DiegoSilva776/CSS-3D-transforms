@@ -40,7 +40,7 @@
           change="updateSettings()">
       </div>
       <div class="input-container">
-        <label>White label presentation mode?</label>
+        <label>Product design mode?</label>
         <input id="presentation-mode" type="checkbox" name="volume" change="updateSettings()">
       </div>
     </div>
@@ -133,85 +133,11 @@
   </div>
 
   <script>
-    function createCanvasAlternative() {
-      var createImage = function (w, h) { 
-        var i = document.createElement("canvas"); i.width = w; i.height = h; i.ctx = i.getContext("2d"); return i; 
-      }
-
-      var canvas = createImage(400, 400);
-      var ctx = canvas.ctx;
-      document.body.appendChild(canvas)
-      ctx.clearRect(0, 0, 500, 500)
-      var image = createImage(400, 200);
-      image.ctx.font = "60px arial";
-      image.ctx.textAlign = "center";
-      image.ctx.fillStyle = "#7F5";
-      image.ctx.fillRect(0, 0, image.width, image.height)
-      image.ctx.fillStyle = "white";
-      image.ctx.fillText("Wrap around", 200, 60)
-      image.ctx.fillText("Some images", 200, 140)
-
-      function draw(ang, tilt, perspective) {
-        var step = 1 / (Math.max(image.width, 400));
-        for (var i = 0; i < 1; i += step) {
-          var a = i * Math.PI;
-          var a1 = (i + step * 2) * Math.PI;
-          var ix = i * image.width * 1.2;
-          var iw = step * image.width * 1.2;
-          a += ang * Math.PI * 2;
-          a1 += ang * Math.PI * 2;
-          a = Math.PI - a;
-          a1 = Math.PI - a1;
-          var x = canvas.width * 0.5;
-          var y = canvas.height * 0.1;
-
-          var x1 = x + Math.cos(a1) * 110;
-          var y1 = y + Math.sin(a) * tilt;
-          x += Math.cos(a) * 110;
-          y += Math.sin(a) * tilt;
-          var s = Math.sin(a);
-          var s1 = Math.sin(a1);
-          if (s > 0 || s1 > 0) {
-            ctx.drawImage(image, ix, 0, iw, image.height, x1, y - s * perspective * 0.5, x - x1, 200 + s * perspective)
-          }
-        }
-      }
-      var w = canvas.width;
-      var h = canvas.height;
-
-      // main update function
-      function update(timer) {
-        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
-        ctx.globalAlpha = 1;                // reset alpha
-        ctx.fillStyle = "black"
-        ctx.fillRect(0, 0, w, h);
-        draw(timer / 2000, 40, 30)
-        requestAnimationFrame(update);
-      }
-      requestAnimationFrame(update);
-    }
-
     // References: 
     // https://github.com/lovell/sharp/issues/1737
-
     // https://24ways.org/2010/intro-to-css-3d-transforms/
     // https://css-tricks.com/almanac/properties/t/transform/
     // Canvas alternative: https://stackoverflow.com/questions/40997344/wrap-an-image-around-a-cylindrical-object-in-html5-javascript
-
-    //anim-infinite-rotation -> start anim
-
-    //.warped-rectangle -> item selector
-    //document.querySelectorAll(".warped-rectangle .section");
-    //.warped-rectangle .section {
-    //   position: absolute;
-    //   /* background: url("https://design-raster.out.customink.com/designs/svv0-00ck-6rxn/front.png"); */
-    //   background: url("https://mms-images.staging.customink.com/mms/images/catalog/colors/364000/views/back.jpg?digest=6cf15c94c3292e10bac13082301b4f12");
-    //   border-width: thin 0;
-    //   height: 500px;
-    //   width: 34px;
-    //   opacity: 1;
-    //   border: 1px solid transparent;
-    // }
 
     let settings = {
       radius: 900,
@@ -225,7 +151,6 @@
 
     initEvents();
     createCylinder(settings);
-    // createCanvasAlternative();
 
     function initEvents() {
       const radiusInput = document.querySelector('#cylinder-radius');
@@ -314,13 +239,9 @@
       if (presentationMode) {
         productImagery.classList.add("white-label-mode");
         wrapedRectangle.classList.add("white-label-mode");
-        //wrapedRectangleSection.forEach(item => item.classList.add("white-label-mode"));
-        //wrapedRectangleSection.classList.add("white-label-mode");
       } else {
         productImagery.classList.remove("white-label-mode");
         wrapedRectangle.classList.remove("white-label-mode");
-        //wrapedRectangleSection.classList.remove("white-label-mode");
-        //wrapedRectangleSection.forEach(item => item.classList.remove("white-label-mode"));
       }
 
       cylindricalContainer.style['-moz-transform'] = `rotateX(${cylindricalContainerRotateX}deg)`;
