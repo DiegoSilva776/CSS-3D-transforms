@@ -10,6 +10,40 @@
 <body>
   <div id="container">
     <h1>image wrapped around a cylindrical shape</h1>
+    <div class="settings-pagel">
+      <div class="input-container">
+        <label>Radius</label>
+        <input id="cylinder-radius" type="range" name="volume" min="0" max="2000" change="updateSettings()">
+      </div>
+      <div class="input-container">
+        <label>Height</label>
+        <input id="cylinder-warped-rectangle-height" type="range" name="volume" min="0" max="500"
+          change="updateSettings()">
+      </div>
+      <div class="input-container">
+        <label>Position y axis</label>
+        <input id="cylinder-warped-rectangle-y" type="range" name="volume" min="0" max="300" change="updateSettings()">
+      </div>
+      <div class="input-container">
+        <label>Position x axis</label>
+        <input id="cylinder-warped-rectangle-x" type="range" name="volume" min="-100" max="100"
+          change="updateSettings()">
+      </div>
+      <div class="input-container">
+        <label>Rotation y axis</label>
+        <input id="cylinder-warped-rectangle-rotate-y" type="range" name="volume" min="0" max="360"
+          change="updateSettings()">
+      </div>
+      <div class="input-container">
+        <label>Rotation x axis</label>
+        <input id="cylindrical-container-rotate-x" type="range" name="volume" min="0" max="360"
+          change="updateSettings()">
+      </div>
+      <div class="input-container">
+        <label>White label presentation mode?</label>
+        <input id="presentation-mode" type="checkbox" name="volume" change="updateSettings()">
+      </div>
+    </div>
     <div class="cylindrical-product-display-container cpdc">
       <div class="product">
         <img
@@ -99,9 +133,70 @@
   </div>
 
   <script>
+    function createCanvasAlternative() {
+      var createImage = function (w, h) { 
+        var i = document.createElement("canvas"); i.width = w; i.height = h; i.ctx = i.getContext("2d"); return i; 
+      }
+
+      var canvas = createImage(400, 400);
+      var ctx = canvas.ctx;
+      document.body.appendChild(canvas)
+      ctx.clearRect(0, 0, 500, 500)
+      var image = createImage(400, 200);
+      image.ctx.font = "60px arial";
+      image.ctx.textAlign = "center";
+      image.ctx.fillStyle = "#7F5";
+      image.ctx.fillRect(0, 0, image.width, image.height)
+      image.ctx.fillStyle = "white";
+      image.ctx.fillText("Wrap around", 200, 60)
+      image.ctx.fillText("Some images", 200, 140)
+
+      function draw(ang, tilt, perspective) {
+        var step = 1 / (Math.max(image.width, 400));
+        for (var i = 0; i < 1; i += step) {
+          var a = i * Math.PI;
+          var a1 = (i + step * 2) * Math.PI;
+          var ix = i * image.width * 1.2;
+          var iw = step * image.width * 1.2;
+          a += ang * Math.PI * 2;
+          a1 += ang * Math.PI * 2;
+          a = Math.PI - a;
+          a1 = Math.PI - a1;
+          var x = canvas.width * 0.5;
+          var y = canvas.height * 0.1;
+
+          var x1 = x + Math.cos(a1) * 110;
+          var y1 = y + Math.sin(a) * tilt;
+          x += Math.cos(a) * 110;
+          y += Math.sin(a) * tilt;
+          var s = Math.sin(a);
+          var s1 = Math.sin(a1);
+          if (s > 0 || s1 > 0) {
+            ctx.drawImage(image, ix, 0, iw, image.height, x1, y - s * perspective * 0.5, x - x1, 200 + s * perspective)
+          }
+        }
+      }
+      var w = canvas.width;
+      var h = canvas.height;
+
+      // main update function
+      function update(timer) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+        ctx.globalAlpha = 1;                // reset alpha
+        ctx.fillStyle = "black"
+        ctx.fillRect(0, 0, w, h);
+        draw(timer / 2000, 40, 30)
+        requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+
     // References: 
+    // https://github.com/lovell/sharp/issues/1737
+
     // https://24ways.org/2010/intro-to-css-3d-transforms/
     // https://css-tricks.com/almanac/properties/t/transform/
+    // Canvas alternative: https://stackoverflow.com/questions/40997344/wrap-an-image-around-a-cylindrical-object-in-html5-javascript
 
     //anim-infinite-rotation -> start anim
 
@@ -118,36 +213,142 @@
     //   border: 1px solid transparent;
     // }
 
-    const imgWidth = 900;
+    let settings = {
+      radius: 900,
+      warpedRectangleHeight: 200,
+      warpedRectangleY: 150,
+      warpedRectangleX: 0,
+      warpedRectangleRotateY: 0,
+      cylindricalContainerRotateX: 0,
+      presentationMode: false
+    };
 
-    const cylinderSides = document.querySelectorAll(".warped-rectangle .section");
+    initEvents();
+    createCylinder(settings);
+    // createCanvasAlternative();
 
-    const numSections = cylinderSides.length;
-    const yRectSectionRotationIncrement = 360 / numSections;
+    function initEvents() {
+      const radiusInput = document.querySelector('#cylinder-radius');
+      const warpedRectangleHeightInput = document.querySelector('#cylinder-warped-rectangle-height');
+      const warpedRectangleYInput = document.querySelector('#cylinder-warped-rectangle-y');
+      const warpedRectangleXInput = document.querySelector('#cylinder-warped-rectangle-x');
+      const warpedRectangleRotateYInput = document.querySelector('#cylinder-warped-rectangle-rotate-y');
+      const cylindricalContainerRotateXInput = document.querySelector('#cylindrical-container-rotate-x');
+      const presentationModeInput = document.querySelector('#presentation-mode');
 
-    const imgWidthIncrement = (imgWidth / numSections);
-    const translateZ = (imgWidth / (2 * Math.PI));
+      radiusInput.addEventListener('change', (event) => {
+        updateSettings({
+          radius: event.target.value
+        });
+      });
+      warpedRectangleHeightInput.addEventListener('change', (event) => {
+        updateSettings({
+          warpedRectangleHeight: event.target.value
+        });
+      });
+      warpedRectangleYInput.addEventListener('change', (event) => {
+        updateSettings({
+          warpedRectangleY: event.target.value
+        });
+      });
+      warpedRectangleXInput.addEventListener('change', (event) => {
+        updateSettings({
+          warpedRectangleX: event.target.value
+        });
+      });
+      warpedRectangleRotateYInput.addEventListener('change', (event) => {
+        updateSettings({
+          warpedRectangleRotateY: event.target.value
+        });
+      });
+      cylindricalContainerRotateXInput.addEventListener('change', (event) => {
+        updateSettings({
+          cylindricalContainerRotateX: event.target.value
+        });
+      });
+      presentationModeInput.addEventListener('change', (event) => {
+        updateSettings({
+          presentationMode: event.target.checked
+        });
+      });
+    }
 
-    let rectSectionXRotation = 0;
-    let rectSectionYRotation = 0;
-    let rectSectionZRotation = 0;
-    let sectionImgWidth = imgWidth;
+    function updateSettings({ radius, warpedRectangleHeight, warpedRectangleY, warpedRectangleX,
+      warpedRectangleRotateY, cylindricalContainerRotateX, presentationMode }) {
+      createCylinder({
+        radius: radius ? radius : settings.radius,
+        warpedRectangleHeight: warpedRectangleHeight ? warpedRectangleHeight : settings.warpedRectangleHeight,
+        warpedRectangleY: warpedRectangleY ? warpedRectangleY : settings.warpedRectangleY,
+        warpedRectangleX: warpedRectangleX ? warpedRectangleX : settings.warpedRectangleX,
+        warpedRectangleRotateY: warpedRectangleRotateY ? warpedRectangleRotateY : settings.warpedRectangleRotateY,
+        cylindricalContainerRotateX: cylindricalContainerRotateX ? cylindricalContainerRotateX : settings.cylindricalContainerRotateX,
+        presentationMode: typeof presentationMode != 'undefined' ? presentationMode : settings.presentationMode
+      });
+    }
 
-    cylinderSides.forEach((cylinderPart, idx) => {
-      cylinderPart.style['width'] = `${imgWidthIncrement}px`;
+    function createCylinder({ radius, warpedRectangleHeight, warpedRectangleY, warpedRectangleX,
+      warpedRectangleRotateY, cylindricalContainerRotateX, presentationMode }) {
+      settings = { radius, warpedRectangleHeight, warpedRectangleY, warpedRectangleX, warpedRectangleRotateY, cylindricalContainerRotateX, presentationMode };
 
-      if (idx === 0) {
-        cylinderPart.style['background-position'] = `0 -1`;
+      const imgWidth = radius ? radius : 900;
+
+      const cylindricalContainer = document.querySelector(".cylindrical-container");
+      const cylinder = document.querySelector(".warped-rectangle");
+      const cylinderSides = document.querySelectorAll(".warped-rectangle .section");
+
+      const numSections = cylinderSides.length;
+      const yRectSectionRotationIncrement = 360 / numSections;
+
+      const imgWidthIncrement = (imgWidth / numSections);
+      const translateZ = (imgWidth / (2 * Math.PI));
+
+      let rectSectionXRotation = 0;
+      let rectSectionYRotation = 0;
+      let rectSectionZRotation = 0;
+      let sectionImgWidth = imgWidth;
+
+      const productImagery = document.querySelector('.cpdc .cylindrical-container .product-imagery');
+      const wrapedRectangle = document.querySelector('.cpdc .cylindrical-container .warped-rectangle');
+      const wrapedRectangleSection = document.querySelector('.cpdc .cylindrical-container .warped-rectangle .section');
+
+      if (presentationMode) {
+        productImagery.classList.add("white-label-mode");
+        wrapedRectangle.classList.add("white-label-mode");
+        //wrapedRectangleSection.forEach(item => item.classList.add("white-label-mode"));
+        //wrapedRectangleSection.classList.add("white-label-mode");
       } else {
-        sectionImgWidth -= imgWidthIncrement;
-        cylinderPart.style['background-position'] = `${sectionImgWidth}px -1`;
+        productImagery.classList.remove("white-label-mode");
+        wrapedRectangle.classList.remove("white-label-mode");
+        //wrapedRectangleSection.classList.remove("white-label-mode");
+        //wrapedRectangleSection.forEach(item => item.classList.remove("white-label-mode"));
       }
 
-      cylinderPart.style['-moz-transform'] = `rotateX(${rectSectionXRotation}deg) rotateY(${rectSectionYRotation}deg) rotateZ(${rectSectionZRotation}) translateZ(${translateZ}px)`;
-      cylinderPart.style['-webkit-transform'] = `rotateX(${rectSectionXRotation}deg) rotateY(${rectSectionYRotation}deg) rotateZ(${rectSectionZRotation}) translateZ(${translateZ}px)`;
+      cylindricalContainer.style['-moz-transform'] = `rotateX(${cylindricalContainerRotateX}deg)`;
+      cylindricalContainer.style['-webkit-transform'] = `rotateX(${cylindricalContainerRotateX}deg)`;
 
-      rectSectionYRotation += yRectSectionRotationIncrement;
-    });
+      cylinder.style['height'] = `${warpedRectangleHeight}px`;
+      cylinder.style['top'] = `${warpedRectangleY}px`;
+      cylinder.style['left'] = `${warpedRectangleX}px`;
+      cylinder.style['left'] = `${warpedRectangleX}px`;
+      cylinder.style['-moz-transform'] = `rotateY(${warpedRectangleRotateY}deg)`;
+      cylinder.style['-webkit-transform'] = `rotateY(${warpedRectangleRotateY}deg)`;
+
+      cylinderSides.forEach((cylinderPart, idx) => {
+        cylinderPart.style['width'] = `${imgWidthIncrement}px`;
+
+        if (idx === 0) {
+          cylinderPart.style['background-position'] = `0 -1`;
+        } else {
+          sectionImgWidth -= imgWidthIncrement;
+          cylinderPart.style['background-position'] = `${sectionImgWidth}px -1`;
+        }
+
+        cylinderPart.style['-moz-transform'] = `rotateX(${rectSectionXRotation}deg) rotateY(${rectSectionYRotation}deg) rotateZ(${rectSectionZRotation}) translateZ(${translateZ}px)`;
+        cylinderPart.style['-webkit-transform'] = `rotateX(${rectSectionXRotation}deg) rotateY(${rectSectionYRotation}deg) rotateZ(${rectSectionZRotation}) translateZ(${translateZ}px)`;
+
+        rectSectionYRotation += yRectSectionRotationIncrement;
+      });
+    }
   </script>
 
 </html>
